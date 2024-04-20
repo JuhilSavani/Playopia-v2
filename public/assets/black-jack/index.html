@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Black-Jack</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Indie+Flower|Lobster"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Lobster", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #c24040;
+      }
+
+      body {
+        background-color: #c24040;
+      }
+
+      .btn-div {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        position: fixed;
+        top: 41rem;
+      }
+
+      .btn {
+        background: transparent;
+        padding: 0.5rem 2rem;
+        transition: all 0.15s ease;
+        color: #fff;
+        border: solid 7px #fff;
+        font-size: 3rem;
+        margin: 0.5rem;
+        letter-spacing: 0.5rem;
+        box-shadow: 20px 38px 34px -26px hsla(0, 0%, 0%, 0.2);
+        border-radius: 10px;
+
+        &:active {
+          box-shadow: 2px 8px 4px -6px hsla(0, 0%, 0%, 0.3);
+        }
+      }
+
+      .title {
+        margin: 10px 2rem;
+        text-shadow: 5px 0 #232931;
+        font-size: 6rem;
+        text-align: center;
+        background: linear-gradient(30deg, royalblue, lightseagreen);
+        border-radius: 1rem;
+        padding: 1rem;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 1);
+      }
+
+      .player-div {
+        display: flex;
+        justify-content: space-between;
+        padding: 3rem 6rem;
+      }
+
+      .player {
+        width: 200px;
+        color: #fff;
+        font-size: 3rem;
+        border-radius: 0.5rem;
+        border: 2px dashed white;
+        text-align: center;
+      }
+
+      .result {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 300px;
+        width: 22%;
+
+        .emoji {
+          font-size: 10rem;
+        }
+
+        .message {
+          font-size: 2rem;
+          text-align: center;
+          color: white;
+          background: linear-gradient(30deg, royalblue, lightseagreen);
+          border-radius: 0.5rem;
+          box-shadow: inset 0 0 8px rgba(0, 0, 0, 1);
+          padding: 0 2rem;
+        }
+      }
+
+      .card-div {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .cards {
+        margin: 2rem;
+        width: 35%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Black-Jack</h1>
+    <div class="player-div">
+      <h2 class="user player">You</h2>
+      <h2 class="dealer player">Dealer</h2>
+    </div>
+    <div class="card-div">
+      <div class="user-cards cards"></div>
+      <div class="result">
+        <div class="emoji"></div>
+        <div class="message"></div>
+      </div>
+      <div class="dealer-cards cards"></div>
+    </div>
+    <div class="btn-div">
+      <button class="start-btn btn">Start</button>
+      <button class="hit-btn btn" style="opacity: 0" hidden disabled>
+        Hit
+      </button>
+      <button class="stay-btn btn" style="opacity: 0" hidden disabled>
+        Stay
+      </button>
+      <button class="restart-btn btn" style="opacity: 0" hidden>Restart</button>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.6.4.min.js"
+      integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      $(".start-btn").on("click", () => {
+        $(".start-btn").animate({ opacity: 0 }, 400, () => {
+          $(".start-btn").attr("hidden", true);
+          $(".hit-btn, .stay-btn")
+            .removeAttr("hidden")
+            .removeAttr("disabled")
+            .animate({ opacity: 1 }, 400);
+        });
+      });
+
+      let deck = [];
+      let userHand = [];
+      let dealerHand = [];
+      let userScore = 0;
+      let dealerScore = 0;
+      let _status = "none";
+      let emoji = "";
+      let message = "";
+      let hidden = "none";
+      let dealerAceCount = 0;
+      let userAceCount = 0;
+
+      function buildDeck() {
+        let values = [
+          "A",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "J",
+          "Q",
+          "K",
+        ];
+        let types = ["C", "D", "H", "S"];
+        for (let i = 0; i < types.length; i++) {
+          for (let j = 0; j < values.length; j++) {
+            deck.push(values[j] + "-" + types[i]);
+          }
+        }
+      }
+
+      function shuffleDeck() {
+        for (let i = 0; i < deck.length; i++) {
+          j = Math.floor(Math.random() * deck.length);
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+      }
+
+      function getScore(card) {
+        let value = card.split("-")[0];
+        if (isNaN(value)) {
+          if (value == "A") {
+            return 11;
+          }
+          return 10;
+        }
+        return parseInt(value);
+      }
+
+      function checkAce(card) {
+        if (card[0] == "A") {
+          return 1;
+        }
+        return 0;
+      }
+
+      function setCards(image, element) {
+        let cardImg = document.createElement("img");
+        cardImg.src = "cards/" + image + ".png";
+        cardImg.style.cssText = "height: 160px; margin-left: 0.3rem;";
+        document.querySelector(element).appendChild(cardImg);
+      }
+
+      function startGame() {
+        hidden = deck.pop();
+        dealerScore += getScore(hidden);
+        dealerAceCount += checkAce(hidden);
+        let cardImg = document.createElement("img");
+        cardImg.src = "cards/back.png";
+        cardImg.id = "hidden";
+        cardImg.style.cssText = "height: 160px; margin-left: 0.3rem;";
+        document.querySelector(".dealer-cards").appendChild(cardImg);
+        while (dealerScore < 17) {
+          let card = deck.pop();
+          setCards(card, ".dealer-cards");
+          dealerScore += getScore(card);
+          dealerAceCount += checkAce(card);
+        }
+        for (let i = 0; i < 2; i++) {
+          let card = deck.pop();
+          setCards(card, ".user-cards");
+          userScore += getScore(card);
+          userAceCount += checkAce(card);
+        }
+        userScore = reduceAce(userScore, userAceCount);
+        console.log(userScore);
+        if (userScore == 21) {
+          _status = "win";
+          emoji = "😁";
+          message = "You are the blackjack!";
+          $(".hit-btn").prop("disabled", true);
+          $(".stay-btn").prop("disabled", true);
+        }
+        $(document).ready(function () {
+          $(".emoji").text(emoji);
+          $(".message").text(message);
+        });
+      }
+      function reduceAce(playerScore, playerAceCount) {
+        while (playerScore > 21 && playerAceCount > 0) {
+          playerAceCount -= 1;
+          playerScore -= 10;
+        }
+        return playerScore;
+      }
+
+      function hit() {
+        let card = deck.pop();
+        setCards(card, ".user-cards");
+        userScore += getScore(card);
+        userAceCount += checkAce(card);
+        userScore = reduceAce(userScore, userAceCount);
+        console.log(userScore);
+        if (userScore == 21) {
+          _status = "win";
+          emoji = "😁";
+          message = "You are the blackjack!";
+          $(".hit-btn").prop("disabled", true);
+          $(".stay-btn").prop("disabled", true);
+        } else if (userScore > 21) {
+          _status = "lose";
+          emoji = "😞";
+          message = "You went over!";
+          $(".hit-btn").prop("disabled", true);
+          $(".stay-btn").prop("disabled", true);
+        }
+        $(document).ready(function () {
+          $(".emoji").text(emoji);
+          $(".message").text(message);
+        });
+        if (["lose", "win"].includes(_status)) {
+          $(".hit-btn, .stay-btn").animate({ opacity: 0 }, 400, () => {
+            $(".hit-btn, .stay-btn").attr("hidden", true);
+            $(".restart-btn").removeAttr("hidden").animate({ opacity: 1 }, 400);
+          });
+        }
+      }
+
+      function stay() {
+        document.querySelector("#hidden").src = "cards/" + hidden + ".png";
+        userScore = reduceAce(userScore, userAceCount);
+        dealerScore = reduceAce(dealerScore, dealerAceCount);
+        $(".hit-btn").prop("disabled", true);
+        $(".stay-btn").prop("disabled", true);
+        if (dealerScore == 21) {
+          _status = "lose";
+          emoji = "😞";
+          message = "Dealer is the blackjack!";
+        } else if (dealerScore > 21) {
+          _status = "win";
+          emoji = "😁";
+          message = "Dealer went over!";
+        } else if (dealerScore > userScore) {
+          _status = "lose";
+          emoji = "😞";
+          message = "You lose! Dealer's score is higher.";
+        } else if (dealerScore == userScore) {
+          _status = "tie";
+          emoji = "😮‍💨";
+          message = "It's a tie! Nobody wins this round!";
+        } else if (dealerScore < userScore) {
+          _status = "win";
+          emoji = "😁";
+          message = "You've outperformed the dealer! Nice job!";
+        }
+        $(document).ready(function () {
+          $(".emoji").text(emoji);
+          $(".message").text(message);
+        });
+        $(".hit-btn, .stay-btn").animate({ opacity: 0 }, 400, () => {
+          $(".hit-btn, .stay-btn").attr("hidden", true);
+          $(".restart-btn").removeAttr("hidden").animate({ opacity: 1 }, 400);
+        });
+      }
+
+      window.onload = function () {
+        buildDeck();
+        shuffleDeck();
+        $(".start-btn").on("click", () => {
+          startGame();
+        });
+        $(".hit-btn").on("click", () => {
+          hit();
+        });
+        $(".stay-btn").on("click", () => {
+          stay();
+        });
+        $(".restart-btn").on("click", () => {
+          location.reload();
+        });
+      };
+    </script>
+  </body>
+</html>

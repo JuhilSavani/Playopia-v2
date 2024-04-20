@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playopia</title>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/styles.css" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="logo"><span>Playopia</span></div>
+        <nav id="navbar">
+          <a href="#home" data="Main Page" class="active"><span>Home</span></a>
+          <a href="#about" data="What We Do"><span>About</span></a>
+          <a href="#products" data="What We Offer"><span>Products</span></a>
+          <a href="#contact" data="Get in Touch!"><span>Contact</span></a>
+          <a href="#blogs" data="Join the Conversation!"><span>Blogs</span></a>
+          <% if (locals.isLogged) { %>
+            <a href="#" data='<%=locals.username%>'><span><i class='bx bxs-user-rectangle'></i></span></a>
+          <%} else { %>
+            <a href="#login" data="Access Your Account"><span>Login</span></a>
+          <%}%>
+          <span></span>
+        </nav>
+      </div>
+    </header>
+
+    <!-- home: main page -->
+    <section id="home">
+      <div class="parallax">
+        <div class="hero">
+          <h1><span>Welcome to Playopia:</span>Where Fun Knows No Bounds!</h1>
+        </div>
+        <img class="parallax__bg" src="images/bg.jpg" alt="" />
+        <img class="parallax__dust" src="images/dust.webp" alt="" />
+        <img class="parallax__jax" src="images/jax.webp" alt="" />
+        <img class="parallax__luna" src="images/luna.webp" alt="" />
+        <img class="parallax__manny" src="images/manny.webp" alt="" />
+        <img class="parallax__rays" src="images/rays.webp" alt="" />
+        <img class="parallax__back" src="images/foreground-back.webp" alt="" />
+        <img
+          class="parallax__front"
+          src="images/foreground-front.webp"
+          alt=""
+        />
+      </div>
+    </section>
+
+    <!-- about: what we do -->
+    <section id="about">
+      <div class="hero">
+        <h1>
+          <span>Hi, There!</span>
+          we are the developers, of course we don't know how to talk!
+        </h1>
+      </div>
+      <div class="intro">
+        <div class="dev">
+          <img src="images/dev-1.webp" alt="" />
+          <div>
+            <span>Juhil Savani: Chief Debugger</span>
+            <span>
+              While not in front of the screen, you'll find me vibing to lo-fi
+              beats or fueling in some coffee.
+            </span>
+          </div>
+        </div>
+        <div class="dev">
+          <img src="images/dev-2.webp" alt="" />
+          <div>
+            <span>Jay Kanapariya: Design Wizard</span>
+            <span>
+              While not watching the latest Netflix hits, you'll find me
+              designing UIs that make you go 'Wow!'
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="info">
+        <h1>Our Mission</h1>
+        <span>
+          Provide a platform where players can escape into a world of fun and
+          nostalgia. We believe in the power of games to bring people together,
+          spark creativity, and ignite a sense of adventure. Through our curated
+          collection of classic arcade web games, we aim to inspire joy,
+          challenge the mind, and foster a sense of community among our players.
+        </span>
+        <h1>Join the Fun Today!</h1>
+        <span>
+          Join thousands of players from around the globe and start your
+          adventure with Playopia today! Whether you're looking to relive
+          nostalgic memories or create new ones, there's always something
+          exciting waiting for you here.
+        </span>
+      </div>
+      <img class="frame" src="images/frame-1.png" alt="" />
+    </section>
+
+    <!-- products: what we offer -->
+    <section id="products">
+      <div class="hero">
+        <h1>
+          <span>Welcome to,</span>
+          The Classic Arcade!
+        </h1>
+      </div>
+      <div class="container">
+        <a href="assets/word-scramble">
+          <div class="card" style="--i: 0.33">
+            <div>
+              <div class="logo">
+                <img src="images/scramble.jpeg" alt="" />
+              </div>
+              <div class="effect">
+                <img src="images/cone.png" alt="" class="cone" />
+                <img src="images/torus.png" alt="" class="torus" />
+                <img src="images/icosahedron.png" alt="" class="icosahedron" />
+                <img src="images/sphere.png" alt="" class="sphere" />
+              </div>
+            </div>
+            <div class="card_info">
+              <span>Word Scramble</span>
+              <p>
+                Unscramble the letters to form words in this addictive word
+                game.
+              </p>
+            </div>
+          </div>
+        </a>
+        <a href="assets/simon">
+          <div class="card" style="--i: 0.66">
+            <div>
+              <div class="logo">
+                <img src="images/simon.png" alt="" />
+              </div>
+              <div class="effect">
+                <img src="images/cone.png" alt="" class="cone" />
+                <img src="images/torus.png" alt="" class="torus" />
+                <img src="images/icosahedron.png" alt="" class="icosahedron" />
+                <img src="images/sphere.png" alt="" class="sphere" />
+              </div>
+            </div>
+            <div class="card_info">
+              <span>Classic Simon</span>
+              <p>
+                Test your memory and reflexes in this virtual classic simon
+                game.
+              </p>
+            </div>
+          </div>
+        </a>
+        <a href="assets/black-jack">
+          <div class="card" style="--i: 1">
+            <div>
+              <div class="logo">
+                <img
+                  src="images/black-jack.png"
+                  alt=""
+                  style="border-radius: 50%"
+                />
+              </div>
+              <div class="effect">
+                <img src="images/cone.png" alt="" class="cone" />
+                <img src="images/torus.png" alt="" class="torus" />
+                <img src="images/icosahedron.png" alt="" class="icosahedron" />
+                <img src="images/sphere.png" alt="" class="sphere" />
+              </div>
+            </div>
+            <div class="card_info">
+              <span>Black Jack</span>
+              <p>
+                Try your luck and skill in this classic card game of strategy
+                and chance.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <img class="frame" src="images/frame-2.png" alt="" />
+    </section>
+
+    <!-- contact: get in touch -->
+    <section id="contact">
+      <div class="hero">
+        <h1>
+          <span>Now,</span>
+          How About You?
+        </h1>
+      </div>
+      <div class="container">
+        <div id="contact-info">
+          <div><span>Let's </span>Get in Touch</div>
+          <div>
+            <p>
+              Our team is dedicated to providing top-notch support and
+              assistance. Whether you have a question, feedback, or just want to
+              say hello, we'd love to hear from you. Feel free to drop us a
+              message using the provided form, and we'll get back to you as soon
+              as possible.
+            </p>
+          </div>
+          <div>
+            <ul>
+              <li>
+                <i class="bx bxs-map"></i>123 Tech Drive, Suite 500<br />
+                Silicon Valley, CA 94025
+              </li>
+              <li><i class="bx bxl-gmail"></i>playopia@gmail.com</li>
+              <li><i class="bx bx-headphone"></i>+1 (800) 555-1234</li>
+            </ul>
+          </div>
+          <div>
+            <ul>
+              <li><i class="bx bxl-facebook-square"></i></li>
+              <li><i class="bx bxl-instagram-alt"></i></li>
+              <li><i class="bx bxl-twitter"></i></li>
+              <li><i class="bx bxl-linkedin-square"></i></li>
+            </ul>
+          </div>
+        </div>
+        <form action="/">
+          <ul>
+            <li>
+              <input type="text" name="username" placeholder=" " required />
+              <span>Username</span>
+            </li>
+            <li>
+              <input type="tel" name="phone" placeholder=" " required />
+              <span>Phone</span>
+            </li>
+            <li>
+              <textarea required></textarea>
+              <span>Message</span>
+            </li>
+            <li>
+              <div>
+                <input type="file" />
+                <span><i class="bx bx-link"></i>Attachment</span>
+              </div>
+              <input type="submit" value="SUBMIT" />
+            </li>
+          </ul>
+        </form>
+      </div>
+      <img class="frame" src="images/frame-1.png" alt="" />
+    </section>
+
+    <!-- blogs: join the conversation! -->
+    <section id="blogs">
+      <div class="hero">
+        <h1>
+          <span>Welcome to,</span>
+          The Blogosphere!
+        </h1>
+      </div>
+      <div class="container">
+        <nav>
+          <ul>
+            <li class="active"><a href="" tag="tech">Tech</a></li>
+            <li><a href="" tag="games">Games</a></li>
+            <li><a href="" tag="design">Design</a></li>
+            <span></span>
+          </ul>
+        </nav>
+        <div class="wrapper">
+          <div class="tech active">
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>Why Tech Bros and Politicians Can't Really Connect</h3>
+                <div class="date">
+                  <span>Sept 25, 2023 at 0:00 AM</span>
+                </div>
+                <p>
+                  The conflict between batch culture and event loop culture is
+                  evident in tech and governance, with tech embracing real-time
+                  interaction while governance remains slow and procedural.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Paul Ford</span>
+                </div>
+              </div>
+            </div>
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>
+                  Tech Still Isn't Doing Enough to Care for the Environment
+                </h3>
+                <div class="date">
+                  <span>Feb 19, 2024 at 5:00 AM</span>
+                </div>
+                <p>
+                  Greenpeace CTO Priscilla Chomba-Kinywa emphasizes the urgency
+                  of addressing the climate crisis, urging the tech industry to
+                  take greater responsibility.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Stephen Armstrong</span>
+                </div>
+              </div>
+            </div>
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>Nintendo hired a former PlayStation executive</h3>
+                <div class="date">
+                  <span>Apr 14, 2024 at 12:16 AM</span>
+                </div>
+                <p>
+                  Nintendo has hired Gio Corsi, who had a six-year stint at
+                  PlayStation, first as the senior director of developer
+                  relations and then as head of global second-party games,
+                  before leaving in 2019.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Wes Davis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="games right">
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>
+                  Arrested for allegedly hacking Pokémon game to sell custom
+                  monsters
+                </h3>
+                <div class="date">
+                  <span>Apr 13, 2024 at 2:42 AM</span>
+                </div>
+                <p>
+                  The 36-year-old is accused of illegally tampering with Pokémon
+                  Scarlet and Violet's save data and violating a Japanese
+                  corporate espionage law.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Amrita Khalid</span>
+                </div>
+              </div>
+            </div>
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>Game publisher blames media for studio closure</h3>
+                <div class="date">
+                  <span>Apr 13, 2024 at 2:06 AM</span>
+                </div>
+                <p>
+                  Prytania Media co-founder Jeff Strain blamed an unpublished
+                  Kotaku report for the closure of Possibility Space, the second
+                  Prytania studio to shut down in the last two months.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Ash Parrish</span>
+                </div>
+              </div>
+            </div>
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>
+                  Inside the quest to finish Super Mario Maker's disappearing
+                  levels
+                </h3>
+                <div class="date">
+                  <span>Apr 12, 2024 at 8:00 PM</span>
+                </div>
+                <p>
+                  With online services for the Wii U ending, a team of players
+                  set about completing every user-made level for the Nintendo
+                  game before time ran out.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Jay Castello</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="design">
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>
+                  Why Figma CEO Dylan Field is optimistic about AI and the
+                  future of design
+                </h3>
+                <div class="date">
+                  <span>Mar 18, 2024 at 7:30 PM</span>
+                </div>
+                <p>
+                  The leader of design toolmaker Figma on life after the failed
+                  Adobe deal and what comes next in a live interview from SXSW.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span> Nilay Patel</span>
+                </div>
+              </div>
+            </div>
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>
+                  The Outline's Bizarre Design Actually Makes a Lot of Sense
+                </h3>
+                <div class="date">
+                  <span>Dec 19, 2016 at 7:00 AM</span>
+                </div>
+                <p>
+                  The Outline's user interface is fashionably
+                  opaque---mysterious enough to keep you engaged, but not so
+                  impenetrable that it turns you away.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Liz Stinson</span>
+                </div>
+              </div>
+            </div>
+            <div class="blog-card">
+              <img src="https://via.placeholder.com/400x200" alt="Blog Image" />
+              <div class="card-content">
+                <h3>
+                  AutoCAD maker Autodesk is investigating its own accounting
+                  practices
+                </h3>
+                <div class="date">
+                  <span>Apr 2, 2024 at 9:46 PM</span>
+                </div>
+                <p>
+                  Autodesk is internally investigating its accounting practices
+                  with outside assistance. The focus is on free cash flow and
+                  non-GAAP operating margin practices.
+                </p>
+                <div class="author">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Author Image"
+                  />
+                  <span>Elizabeth lopatto</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <img class="frame" src="images/frame-2.png" alt="" />
+    </section>
+
+    <!-- login: be the part -->
+    <% if (locals.isLogged) { %>
+      <section id="login" style="display: none;">
+    <%} else if (locals.error) {%> 
+      <section id="login">
+          <div id="error">
+              <i class='bx bx-x'></i>
+              <span><%=locals.error%></span>
+          </div>
+    <%} else { %>
+      <section id="login">
+    <%}%>
+      <div class="container">
+        <div class="wrapper">
+          <div id="form">
+            <div id="login-form" class="active">
+              <form action="/login" method="POST">
+                <ul>
+                  <li><span>Login</span></li>
+                  <li>
+                    <span>
+                      <i class="bx bxl-google-plus"></i>
+                      <i class="bx bxl-facebook"></i>
+                      <i class="bx bxl-twitter"></i>
+                      <i class="bx bxl-linkedin"></i>
+                      <i class="bx bxl-github"></i>
+                    </span>
+                    <span>or use your email to login.</span>
+                  </li>
+                  <li>
+                    <input
+                      type="text"
+                      placeholder=" "
+                      name="username"
+                      required
+                    />
+                    <span>Username</span>
+                  </li>
+                  <li>
+                    <input
+                      type="password"
+                      placeholder=" "
+                      name="password"
+                      required
+                    />
+                    <span>Password</span>
+                  </li>
+                  <li><a href="">Forget Your Password?</a></li>
+                  <li><input type="submit" value="LOGIN" /></li>
+                </ul>
+              </form>
+            </div>
+            <div id="register-form">
+              <form action="/register" method="POST">
+                <ul>
+                  <li><span>Register</span></li>
+                  <li>
+                    <span>
+                      <i class="bx bxl-google-plus"></i>
+                      <i class="bx bxl-facebook"></i>
+                      <i class="bx bxl-twitter"></i>
+                      <i class="bx bxl-linkedin"></i>
+                      <i class="bx bxl-github"></i>
+                    </span>
+                    <span>or use your email to register.</span>
+                  </li>
+                  <li>
+                    <input
+                      type="text"
+                      placeholder=" "
+                      name="username"
+                      required
+                    />
+                    <span>Username</span>
+                  </li>
+                  <li>
+                    <input type="email" placeholder=" " name="email" required />
+                    <span>Email</span>
+                  </li>
+                  <li>
+                    <input
+                      type="password"
+                      placeholder=" "
+                      name="password"
+                      required
+                    />
+                    <span>Password</span>
+                  </li>
+                  <li><input type="submit" value="REGISTER" /></li>
+                </ul>
+              </form>
+            </div>
+          </div>
+          <div id="message">
+            <span><img src="images/knight.png" alt="" /></span>
+            <span>
+              <div id="login-msg" class="active">
+                <ul>
+                  <li><span>Welcome Back!</span></li>
+                  <li>
+                    <span>Enter your username and password to login.</span>
+                  </li>
+                  <li><span>Not Register yet?</span><a href="">Sign up</a></li>
+                </ul>
+              </div>
+              <div id="register-msg">
+                <ul>
+                  <li><span>Hello, Rookie! </span></li>
+                  <li>
+                    <span> Wanna get started? </span>
+                    Fill out this registration form to create your account.
+                  </li>
+                  <li>
+                    <span>Already have an account?</span><a href="">Sign in</a>
+                  </li>
+                </ul>
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+      <img class="frame" src="images/frame-1.png" alt="" />
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="hero">
+          <div class="logo">
+            <img src="images/logo.png" alt="" />
+            <span>Playopia</span>
+          </div>
+          <p>
+            At Playopia, we're passionate about bringing the joy of classic
+            arcade games to players everywhere. With a diverse selection of
+            timeless favorites like blackjack, word scramble, Simon, and many
+            more, we strive to create an immersive gaming experience that
+            appeals to players of all ages and skill levels.
+          </p>
+          <div class="media">
+            <i class="bx bxl-google-plus"></i>
+            <i class="bx bxl-facebook"></i>
+            <i class="bx bxl-twitter"></i>
+            <i class="bx bxl-linkedin"></i>
+            <i class="bx bxl-github"></i>
+          </div>
+        </div>
+        <div class="news-letter">
+          <form action="/">
+            <ul>
+              <li>Get News, Offers & Tips</li>
+              <li>
+                Subscribe to our newsletter for exclusive access to special
+                offers and discounts!
+              </li>
+              <li>
+                <input type="email" placeholder="Enter email address" />
+                <input type="submit" value="Join" />
+              </li>
+            </ul>
+          </form>
+        </div>
+      </div>
+      <div class="footer-nav">
+        <ul class="nav-list">
+          <li>Services</li>
+          <li><a href="">Word Scramble</a></li>
+          <li><a href="">Classic Simon</a></li>
+          <li><a href="">Black Jack</a></li>
+        </ul>
+        <ul class="nav-list">
+          <li>Support</li>
+          <li><a href="">Guides</a></li>
+          <li><a href="">FAQs</a></li>
+          <li><a href="">Review</a></li>
+        </ul>
+        <ul class="nav-list">
+          <li>Legal</li>
+          <li><a href="">Privacy Policy</a></li>
+          <li><a href="">Terms of Use</a></li>
+          <li><a href="">Legal Notice</a></li>
+        </ul>
+      </div>
+      <div class="copyrights">
+        <span>
+          &copy; Copyrights 2024 by Playopia, Inc. All Rights are reserved.
+          <br /><br />
+          Made in Ahmedabad&nbsp; ❤
+        </span>
+      </div>
+    </footer>
+    <script>
+      if('<%=locals.error%>'){
+        window.location.href = `http://localhost:3000/<%=locals.path%>#login`;
+      }
+    </script>
+    <script src="scripts/scripts.js" defer></script>  
+  </body>
+</html>

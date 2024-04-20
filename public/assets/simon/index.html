@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simon</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Press+Start+2P"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100vh;
+        align-items: center;
+        background-color: #219C90;
+      }
+      .container.game-over {
+        background-color: red;
+        opacity: 0.6;
+      }
+      #level-title {
+        font-family: "Press Start 2P", cursive;
+        font-size: 2rem;
+        margin-bottom: 8rem;
+        color: #fce09b;
+
+      }
+      .pressed {
+        box-shadow: 0 0 20px white;
+        background-color: grey;
+      }
+      .wrapper {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        position: relative;
+        gap: 1.5rem;
+      }
+      .wrapper::before {
+        position: absolute;
+        content: "";
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background-color: #219C90;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+      .container.game-over .wrapper::before{
+        background-color: red;
+      }
+      .btn {
+        width: 225px;
+        height: 225px;
+        position: relative;
+        border: 10px solid rgba(0, 0, 0, 0.8);
+      }
+
+      .red {
+        background-color: #e53;
+        border-radius: 0 100% 0 0;
+      }
+      .yellow {
+        background-color: #fd0;
+        border-radius: 0 0 0 100%;
+      }
+      .green {
+        background-color: #90d26d;
+        border-radius: 100% 0 0 0;
+      }
+      .blue {
+        background-color: #1af;
+        border-radius: 0 0 100% 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 id="level-title">Press Any Key to Start</h1>
+      <div class="wrapper">
+        <div type="button" id="green" class="btn green"></div>
+        <div type="button" id="red" class="btn red"></div>
+        <div type="button" id="yellow" class="btn yellow"></div>
+        <div type="button" id="blue" class="btn blue"></div>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      var lev = 0;
+      var gameSequence = [];
+      var btns = ["green", "red", "yellow", "blue"];
+      var inputSequence = [];
+      var started = false;
+
+      $(document).keypress(function () {
+        if (!started) {
+          started = true;
+          nextSequence();
+        }
+      });
+
+      function nextSequence() {
+        inputSequence = [];
+        lev++;
+        $("#level-title").text("Level " + lev);
+        var index = Math.floor(Math.random() * btns.length);
+        var btn = btns[index];
+        gameSequence.push(btn);
+        $("#" + btn)
+          .fadeIn(100)
+          .fadeOut(100)
+          .fadeIn(100);
+        // animatePress(btn);
+        playSound(btn);
+      }
+
+      function startOver() {
+        lev = 0;
+        gameSequence = [];
+        started = false;
+      }
+
+      $(".btn").click(function () {
+        var pressedBtn = this.id;
+        animatePress(pressedBtn);
+        inputSequence.push(pressedBtn);
+        if (
+          inputSequence[inputSequence.length - 1] ===
+          gameSequence[inputSequence.length - 1]
+        ) {
+          playSound(pressedBtn);
+          if (inputSequence.length === gameSequence.length) {
+            setTimeout(nextSequence, 1000);
+          }
+        } else {
+          playSound("wrong");
+          $(".container").addClass("game-over");
+          $("#level-title").text("Game Over, Press Any Key to Restart");
+          setTimeout(function () {
+            $(".container").removeClass("game-over");
+          }, 100);
+          startOver();
+        }
+      });
+
+      function playSound(name) {
+        var audio = new Audio("sounds/" + name + ".mp3");
+        audio.play();
+      }
+
+      function animatePress(currentColor) {
+        $("#" + currentColor).addClass("pressed");
+        setTimeout(function () {
+          $("#" + currentColor).removeClass("pressed");
+        }, 100);
+      }
+    </script>
+  </body>
+</html>
