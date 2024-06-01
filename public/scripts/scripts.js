@@ -117,4 +117,14 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("section").forEach((sec) => {
     animationObserver.observe(sec);
   });
+  
+  // Error Handelling
+  const x = document.querySelector("#login #error .bx-x");
+  x.addEventListener("click", () => {
+    x.parentNode.style.opacity = 0;
+    setTimeOut(() => {
+      x.parentNode.style.display = "none";
+    }, 500);
+  });
+
 });

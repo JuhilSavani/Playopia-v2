@@ -1,114 +1,145 @@
 import express from "express";
-import fs from "fs";
 import bodyParser from "body-parser";
 import bcrypt from "bcrypt";
+import pg from "pg";
+import session from "express-session";
+import passport from "passport";
+import { Strategy } from "passport-local";
+import env from "dotenv";
 
 const app = express();
 const port = 3000;
-const usersFile = "users.csv";
+env.config();
+const saltRound = parseInt(process.env.SALT_ROUNDS);
 
-// Load users from CSV file
-let users = [];
-fs.readFile(usersFile, "utf8", (err, data) => {
-  if (err) {
-    console.error("Error reading CSV:", err);
-  } else {
-    const rows = data.trim().split("\n");
-    rows.forEach((row) => {
-      const [uid, username, email, password] = row.split(",");
-      users.push({ uid, username, email, password });
-    });
-  }
+const pool = new pg.Pool({
+  host: process.env.PG_HOST,
+  port: process.env.PG_PORT,
+  user: process.env.PG_USER,
+  password: process.env.PG_PASSWORD,
+  database: process.env.PG_DATABASE,
 });
 
-// Middleware
+// Middlewares
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60,
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find((u) => u.username === username);
-  if (!user) {
-    console.error("Error: User not found");
-    return res.render("index.ejs", {
-      error: "Please check your username and try again.",
-      path: "login",
-    });
-  }
-  bcrypt.compare(password, user.password, (err, result) => {
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
     if (err) {
-      console.error("Error comparing passwords:", err);
+      return next(err);
+    }
+    if (!user) {
       return res.render("index.ejs", {
-        error: "An error occurred. Please try again later.",
+        error: info.message,
         path: "login",
       });
     }
-    if (result) {
-      console.log("Login successful");
-      res.redirect(`/dashboard?username=${username}&uid=${user.uid}`);
-    } else {
-      console.error("Error: Incorrect password");
-      res.render("index.ejs", {
-        error: "Please check your password and try again.",
-        path: "login",
-      });
-    }
-  });
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect(`/${user.username}`);
+    });
+  })(req, res, next);
 });
 
 app.post("/register", async (req, res) => {
+  const { username, email, password } = req.body;
   try {
-    const { username, email, password } = req.body;
-    const isExist = users.some((u) => u.username === username);
-    if (isExist) {
-      console.error("Error: User already exists with this username.");
-      return res.render("index.ejs", {
-        error: "User already exists with this username.",
-        path: "register",
-      });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = {
-      uid: Date.now().toString(),
-      username,
-      email,
-      password: hashedPassword,
-    };
-    users.push(newUser);
-    const userRecord = `${newUser.uid},${username},${email},${hashedPassword}\n`;
-    fs.appendFile(usersFile, userRecord, (err) => {
+    bcrypt.hash(password, saltRound, async (err, hash) => {
       if (err) {
-        console.error("Error appending to CSV:", err);
+        console.log(err);
+      } else {
+        const result = await pool.query(
+          `INSERT INTO playopia (username, email, password) VALUES ($1, $2, $3) RETURNING *;`,
+          [username, email, hash]
+        );
+        const user = result.rows[0];
+        req.logIn(user, (err) => {
+          if (err) {
+            console.error(err);
+            return res.render("index.ejs", {
+              error: "An error occurred during registeration. Please try again",
+              path: "register",
+            });
+          }
+          return res.redirect(`/${username}`);
+        });
       }
     });
-    console.log("Registration successful");
-    res.redirect(`/dashboard?username=${username}&uid=${newUser.uid}`);
-  } catch (error) {
-    console.error("Error: Registration Failed!", error);
-    res.render("index.ejs", {
-      error: "Registration failed. Please try again.",
-      path: "register",
-    });
+  } catch (err) {
+    console.log(err);
   }
 });
 
-app.get("/dashboard", (req, res) => {
-  const { username, uid } = req.query;
-  const isExist = users.some((u) => u.username === username && u.uid === uid);
-  if (isExist) {
-    return res.render("index.ejs", { isLogged: true, username });
+app.get("/:username", async (req, res) => {
+  const username = req.params.username;
+  if (req.isAuthenticated() && req.params.username === req.user.username) {
+    res.render("index.ejs", { isLogged: true, username: username });
   } else {
-    console.error("Error: User not found");
-    return res.redirect("/");
+    res.redirect("/");
   }
 });
 
-// Start server
+// Passport Setup
+passport.use(
+  new Strategy(async function verify(username, password, cb) {
+    try {
+      const result = await pool.query(
+        `SELECT * FROM playopia WHERE username=$1;`,
+        [username]
+      );
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        const storedHashedPassword = user.password;
+        bcrypt.compare(password, storedHashedPassword, (err, isMatch) => {
+          if (err) return cb(err);
+          else {
+            if (isMatch) return cb(null, user);
+            else
+              return cb(null, false, {
+                message: "Please, check your password and try again",
+              });
+          }
+        });
+      } else {
+        cb(null, false, { message: "User not found." });
+      }
+    } catch (err) {
+      cb(err);
+    }
+  })
+);
+
+passport.serializeUser((user, cb) => {
+  cb(null, user);
+});
+
+passport.deserializeUser((user, cb) => {
+  cb(null, user);
+});
+
+// Start Server
 app.listen(port, () => {
   console.log(`Server listening at 'http://localhost:${port}'`);
 });

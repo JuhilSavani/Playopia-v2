@@ -205,6 +205,9 @@ header .logo span {
 
 #navbar a[href="#"]::before {
     top: 150%;
+    padding: 0.3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #navbar a[href="#"] {
@@ -1175,6 +1178,7 @@ header .logo span {
         gap: 1rem;
         border-radius: 1rem;
         overflow-x: scroll;
+        scroll-snap-type: x mandatory;
         height: 320px;
     }
 
@@ -1182,6 +1186,7 @@ header .logo span {
         min-width: 650px;
         height: 320px;
         display: flex;
+        scroll-snap-align: start;
         align-items: center;
     }
 
@@ -1213,7 +1218,7 @@ header .logo span {
     position: relative;
 }
 
-#login #error{
+#login #error {
     width: 400px;
     height: 150px;
     background-color: #ECB159;
@@ -1222,18 +1227,19 @@ header .logo span {
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 10px;
-    z-index: 20;
+    z-index: 10;
     box-shadow: 0 0 20px rgba(0, 0, 0, 1);
+    transition: 0.5s ease;
 }
 
-#login #error i{
+#login #error i {
     position: absolute;
     top: 0;
     right: 0;
     font-size: 3rem;
 }
 
-#login #error span{
+#login #error span {
     display: block;
     margin: 3rem auto;
     width: 80%;
