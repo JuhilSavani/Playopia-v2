@@ -121,10 +121,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Error Handelling
   const x = document.querySelector("#login #error .bx-x");
   x.addEventListener("click", () => {
-    x.parentNode.style.opacity = 0;
-    setTimeOut(() => {
-      x.parentNode.style.display = "none";
-    }, 500);
+    x.parentNode.style.opacity = 0
+    document.querySelector("#login .backdrop").style.opacity = 0
+    setTimeout(()=>{
+      document.querySelector("#login .backdrop").style.display = "none";
+    }, 1000); 
   });
-
 });

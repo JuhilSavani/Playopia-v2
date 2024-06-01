@@ -123,7 +123,7 @@ passport.use(
           }
         });
       } else {
-        cb(null, false, { message: "User not found." });
+        cb(null, false, { message: "Please check your username and try again." });
       }
     } catch (err) {
       cb(err);

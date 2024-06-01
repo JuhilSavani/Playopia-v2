@@ -491,10 +491,12 @@
       <section id="login" style="display: none;">
     <%} else if (locals.error) {%> 
       <section id="login">
+        <div class="backdrop">
           <div id="error">
               <i class='bx bx-x'></i>
               <span><%=locals.error%></span>
           </div>
+        </div>
     <%} else { %>
       <section id="login">
     <%}%>
