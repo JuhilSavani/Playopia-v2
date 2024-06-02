@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import bodyParser from "body-parser";
 import bcrypt from "bcrypt";
 import pg from "pg";
@@ -18,6 +18,10 @@ const pool = new pg.Pool({
   user: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DATABASE,
+  max: 10,
+  connectionTimeoutMillis: 2000,
+  idleTimeoutMillis: 2000,
+  allowExitOnIdle: false,
 });
 
 // Middlewares
@@ -40,6 +44,9 @@ app.use(passport.session());
 
 // Routes
 app.get("/", (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect(`/${req.user.username}`);
+  }
   res.render("index.ejs");
 });
 
@@ -66,29 +73,35 @@ app.post("/login", (req, res, next) => {
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    bcrypt.hash(password, saltRound, async (err, hash) => {
+    const hash = await bcrypt.hash(password, saltRound);
+    const result = await pool.query(
+      `INSERT INTO playopia (username, email, password) VALUES ($1, $2, $3) RETURNING *;`,
+      [username, email, hash]
+    );
+    const user = result.rows[0];
+    req.logIn(user, (err) => {
       if (err) {
-        console.log(err);
-      } else {
-        const result = await pool.query(
-          `INSERT INTO playopia (username, email, password) VALUES ($1, $2, $3) RETURNING *;`,
-          [username, email, hash]
-        );
-        const user = result.rows[0];
-        req.logIn(user, (err) => {
-          if (err) {
-            console.error(err);
-            return res.render("index.ejs", {
-              error: "An error occurred during registeration. Please try again",
-              path: "register",
-            });
-          }
-          return res.redirect(`/${username}`);
+        console.error(err);
+        return res.render("index.ejs", {
+          error: "An error occurred during registration. Please try again",
+          path: "register",
         });
       }
+      return res.redirect(`/${username}`);
     });
   } catch (err) {
-    console.log(err);
+    if (err.message.includes('playopia_username_key')) {
+      console.log('Username already exists');
+      return res.render("index.ejs", {
+        error: "Username already exists. Please choose another one.",
+        path: "register",
+      });
+    } else if (err.message.includes('unique_email')) {
+      return res.render("index.ejs", {
+        error: "A User is already exists on this email ID. Please try another email ID.",
+        path: "register",
+      });
+    }
   }
 });
 
@@ -123,7 +136,9 @@ passport.use(
           }
         });
       } else {
-        cb(null, false, { message: "Please check your username and try again." });
+        cb(null, false, {
+          message: "Please check your username and try again.",
+        });
       }
     } catch (err) {
       cb(err);
