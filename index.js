@@ -165,8 +165,28 @@ app.listen(port, () => {
   console.log(`Server listening at 'http://localhost:${port}'`);
 });
 
-process.on('exit', () => {
+// Deleting the expired session 
+setInterval(async () => {
+  try {
+    await pool.query("DELETE FROM session WHERE expire < NOW()");
+    console.log("Expired sessions deleted successfully.");
+  } catch (err) {
+    console.error("Error deleting expired sessions:", err);
+  }
+}, 20 * 60 * 1000);
+
+// Closing the pool properly
+const gracefulShutdown = () => {
   pool.end(() => {
     console.log('Pool has ended');
+    process.exit(0);
   });
+};
+
+process.on('exit', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+  gracefulShutdown();
 });
