@@ -1,8 +1,9 @@
-import express, { response } from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import bcrypt from "bcrypt";
 import pg from "pg";
 import session from "express-session";
+import pgSession from "connect-pg-simple";
 import passport from "passport";
 import { Strategy } from "passport-local";
 import env from "dotenv";
@@ -21,15 +22,20 @@ const pool = new pg.Pool({
   max: 10,
   connectionTimeoutMillis: 2000,
   idleTimeoutMillis: 2000,
-  allowExitOnIdle: false,
 });
 
 // Middlewares
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const PgSession = pgSession(session);
+
 app.use(
   session({
+    store: new PgSession({
+      pool: pool,
+      tableName: 'session'
+    }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -157,4 +163,10 @@ passport.deserializeUser((user, cb) => {
 // Start Server
 app.listen(port, () => {
   console.log(`Server listening at 'http://localhost:${port}'`);
+});
+
+process.on('exit', () => {
+  pool.end(() => {
+    console.log('Pool has ended');
+  });
 });
