@@ -19,7 +19,7 @@ const pool = new pg.Pool({
   user: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DATABASE,
-  max: 10,
+  max: 5,
   connectionTimeoutMillis: 2000,
   idleTimeoutMillis: 2000,
 });
@@ -86,7 +86,13 @@ app.post("/login", (req, res, next) => {
       });
     }
     req.logIn(user, (err) => {
-      if (err) return next(err);
+      if (err){
+        console.error(err.stack);
+        return res.render("index.ejs", {
+          error: "An error occurred during login. Please try again",
+          path: "login",
+        });
+      }
       return res.redirect(`/${user.username}`);
     });
   });
@@ -95,35 +101,37 @@ app.post("/login", (req, res, next) => {
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    const hash = await bcrypt.hash(password, saltRound);
-    const result = await pool.query(
-      `INSERT INTO playopia (username, email, password) VALUES ($1, $2, $3) RETURNING *;`,
-      [username, email, hash]
+    const response = await pool.query(
+      `SELECT id FROM playopia WHERE username = $1 OR email = $2`,
+      [username, email]
     );
-    const user = result.rows[0];
-    req.logIn(user, (err) => {
-      if (err) {
-        console.error(err);
-        return res.render("index.ejs", {
-          error: "An error occurred during registration. Please try again",
-          path: "register",
-        });
-      }
-      return res.redirect(`/${username}`);
-    });
-  } catch (err) {
-    if (err.message.includes('playopia_username_key')) {
-      console.log('Username already exists');
+    if (response.rows.length) {
+      // user already exist with entered username or email
       return res.render("index.ejs", {
-        error: "Username already exists. Please choose another one.",
+        error: "Try again with a different username or email.",
         path: "register",
       });
-    } else if (err.message.includes('unique_email')) {
-      return res.render("index.ejs", {
-        error: "A User is already exists on this email ID. Please try another email ID.",
-        path: "register",
+    }else{
+      // user is unique
+      const hash = await bcrypt.hash(password, saltRound);
+      const result = await pool.query(
+        `INSERT INTO playopia (username, email, password) VALUES ($1, $2, $3) RETURNING *;`,
+        [username, email, hash]
+      );
+      const user = result.rows[0];
+      req.logIn(user, (err) => {
+        if (err) {
+          console.error(err.stack);
+          return res.render("index.ejs", {
+            error: "An error occurred during registration. Please try again",
+            path: "register",
+          });
+        }
+        return res.redirect(`/${username}`);
       });
     }
+  } catch (err) {
+    
   }
 });
 
@@ -177,7 +185,7 @@ app.listen(port, () => {
   console.log(`Server listening at 'http://localhost:${port}'`);
 });
 
-// Deleting the expired session 
+// Deleting the expired session on each 20 min
 setInterval(async () => {
   try {
     await pool.query("DELETE FROM session WHERE expire < NOW()");
