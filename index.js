@@ -56,24 +56,40 @@ app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
+// first implementation
+// app.post("/login", (req, res, next) => {
+//   passport.authenticate("local", (err, user) => {
+//     if (err) {
+//       return res.render("index.ejs", {
+//         error: err.message,
+//         path: "login",
+//       });
+//     }
+//     req.logIn(user, (err) => {
+//       if (err) {
+//         return next(err);
+//       }
+//       return res.redirect(`/${user.username}`);
+//     });
+//   })(req, res, next);
+// });
+
+// second implementation
+const authLocal = passport.authenticate("local");
 app.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
+  authLocal(req, res, (err)=>{
+    const user = req.user;
     if (!user) {
       return res.render("index.ejs", {
-        error: info.message,
+        error: err.message,
         path: "login",
       });
     }
     req.logIn(user, (err) => {
-      if (err) {
-        return next(err);
-      }
+      if (err) return next(err);
       return res.redirect(`/${user.username}`);
     });
-  })(req, res, next);
+  });
 });
 
 app.post("/register", async (req, res) => {
@@ -132,22 +148,18 @@ passport.use(
         const user = result.rows[0];
         const storedHashedPassword = user.password;
         bcrypt.compare(password, storedHashedPassword, (err, isMatch) => {
-          if (err) return cb(err);
+          if (err) return cb(err, false);
           else {
             if (isMatch) return cb(null, user);
             else
-              return cb(null, false, {
-                message: "Please, check your password and try again",
-              });
+              return cb(new Error("Please, check your password and try again"), false);
           }
         });
       } else {
-        cb(null, false, {
-          message: "Please check your username and try again.",
-        });
+        cb(new Error("Please check your username and try again."), false);
       }
     } catch (err) {
-      cb(err);
+      cb(err, false);
     }
   })
 );
