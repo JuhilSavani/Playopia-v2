@@ -10,28 +10,33 @@
 
 <br/>
 
-## Database Setup
+## Prerequisites
+
+Before you begin, ensure that you have the following installed on your machine:
+
+- **Node.js** (v14.x or higher): Required to run the server and client applications.
+- **npm** (v6.x or higher) or **yarn** (v1.x or higher): Package managers to install dependencies.
+- **PostgreSQL**: The database used for storing user information. Ensure you have it installed and set up locally or have access to a remote PostgreSQL instance.
+- **pgAdmin**: Optional, but recommended for managing your PostgreSQL database.
+
+With these prerequisites in place, you’ll be ready to set up and run the project(or implementation).
+
+
+## Database Setup 
 
 This project uses PostgreSQL as its database management system. Follow the steps below to set up the database and create the necessary table.
 
-### Prerequisites
-
-- Ensure you have PostgreSQL installed on your system.
-- Install pgAdmin, a graphical interface for managing PostgreSQL databases.
-
-### Step-by-Step Guide
-
-#### 1. Launch pgAdmin
+### 1. Launch pgAdmin
 
 - Open pgAdmin from your applications menu.
 - Connect to your PostgreSQL server instance. If you haven't set up a server connection, follow the prompts to add a new server connection.
 
-#### 2. Create a New Database
+### 2. Create a New Database
 
 - In the pgAdmin interface, right-click on the `Databases` node in the tree view and select `Create` > `Database...`
 - Enter the name of your new database (e.g., `playopia_db`) and click `Save`.
 
-#### 3. Create Necessary Tables
+### 3. Create Necessary Tables
 
 - Copy and paste the following SQL queries into the query editor and run these queries:
 
@@ -62,6 +67,16 @@ This project uses PostgreSQL as its database management system. Follow the steps
 
 <br/>
 
+## Environment Variables
+To run the application, ensure you have the following environment variables set up:
+- `SESSION_SECRET`: The secret key for managing session data.
+- `PG_HOST`: PostgreSQL host.
+- `PG_PORT`: PostgreSQL port.
+- `PG_DATABASE`: PostgreSQL database name.
+- `PG_USER`: PostgreSQL user.
+- `PG_PASSWORD`: PostgreSQL password.
+- `SALT_ROUNDS`: The number of salt rounds for bcrypt.
+  
 ## How to use
 
 1. Clone/Download the repo.
